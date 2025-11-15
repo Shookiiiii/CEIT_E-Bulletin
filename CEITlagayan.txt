@@ -1,0 +1,603 @@
+<?php
+include "CEIT_config.php";
+include "../../db.php";
+
+
+$query = "SELECT * FROM Central_Post WHERE title='announcement'";
+$result = $conn->query($query);
+
+$pdfs = [];
+while ($row = $result->fetch_assoc()) {
+  $pdfs[] = [
+    'file_path' => 'uploads/' . $row['file_path'],
+    'description' => $row['content']
+  ];
+}
+?>
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>College MIS Dashboard</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .pdf-box {
+      border: 1px solid #ccc;
+      padding: 15px;
+      margin-bottom: 30px;
+      width: 100%;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .description {
+      font-size: 1rem;
+      margin-bottom: 10px;
+      font-weight: bold;
+    }
+
+    .pdf-canvas {
+      width: 100%;
+      height: 100%;
+      border: 1px solid #eee;
+    }
+  </style>
+</head>
+
+<body class="bg-gray-100 min-h-screen font-sans">
+  <div class="flex min-h-screen">
+    <!-- Sidebar -->
+    <aside
+      class="w-64 bg-orange-600 text-white p-4 flex flex-col justify-between">
+      <div>
+        <img
+          src="cvsulogo.png"
+          alt="School Logo"
+          class="w-24 h-24 mx-auto mb-6 rounded-full" />
+        <hr class="my-4 border-t-2 border-orange-800" />
+        <nav class="flex space-x-2 mb-4">
+          <button
+            onclick="switchMainTab('manage')"
+            id="manageBtn"
+            class="main-nav-btn flex-1 text-center p-2 bg-orange-700 rounded font-bold">
+            Manage Posts
+          </button>
+          <button
+            onclick="switchMainTab('upload')"
+            id="uploadBtn"
+            class="main-nav-btn flex-1 text-center p-2 hover:bg-orange-700 rounded">
+            Upload to Bulletin
+          </button>
+        </nav>
+        <hr class="my-4 border-t-2 border-orange-800" />
+        <div id="manageSubmenu" class="mt-6 space-y-2">
+          <button
+            onclick="showTab('announcements', event)"
+            class="nav-btn w-full text-left p-2 hover:bg-orange-700 rounded">
+            Announcements
+          </button>
+          <button
+            onclick="showTab('graphs', event)"
+            class="nav-btn w-full text-left p-2 hover:bg-orange-700 rounded">
+            Graphs
+          </button>
+          <button
+            onclick="showTab('memos', event)"
+            class="nav-btn w-full text-left p-2 hover:bg-orange-700 rounded">
+            Memo Updates
+          </button>
+          <button
+            onclick="showTab('about', event)"
+            class="nav-btn w-full text-left p-2 hover:bg-orange-700 rounded">
+            About Departments
+          </button>
+        </div>
+        <div id="uploadSubmenu" class="mt-6 space-y-2 hidden">
+          <button
+            onclick="showUploadTab('upload-announcements', event)"
+            class="upload-tab-btn w-full text-left p-2 hover:bg-orange-700 rounded">
+            Announcements
+          </button>
+          <button
+            onclick="showUploadTab('upload-graphs', event)"
+            class="upload-tab-btn w-full text-left p-2 hover:bg-orange-700 rounded">
+            Graphs
+          </button>
+          <button
+            onclick="showUploadTab('upload-memos', event)"
+            class="upload-tab-btn w-full text-left p-2 hover:bg-orange-700 rounded">
+            Memo Updates
+          </button>
+          <button
+            onclick="showUploadTab('upload-about', event)"
+            class="upload-tab-btn w-full text-left p-2 hover:bg-orange-700 rounded">
+            About CEIT
+          </button>
+        </div>
+      </div>
+      <div class="mt-6 text-right text-xl">
+        <p>Welcome,<br />College MIS Officer!</p>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="flex-1 p-8 bg-white shadow-inner">
+      <div class="flex items-center justify-between mb-4">
+        <h1 class="text-3xl font-bold text-orange-600" id="pageTitle">
+          Manage Department Posts
+        </h1>
+        <button
+          id="uploadButton"
+          onclick="openModal()"
+          class="hidden px-4 py-2 bg-orange-600 text-white rounded hover:bg-orange-700">
+          Upload
+        </button>
+      </div>
+      <hr class="my-8 border-t-2 border-gray-300" />
+
+      <!-- Department Tabs -->
+      <div
+        id="departmentTabs"
+        class="flex justify-center gap-6 mb-6 border-b border-gray-300">
+        <button
+          onclick="showDepartment('dit', event)"
+          class="dept-btn text-orange-600 pb-2 font-large border-b-2 border-transparent hover:border-orange-400 transition">
+          DIT
+        </button>
+        <button
+          onclick="showDepartment('dafe', event)"
+          class="dept-btn text-orange-600 pb-2 font-large border-b-2 border-transparent hover:border-orange-400 transition">
+          DAFE
+        </button>
+        <button
+          onclick="showDepartment('diet', event)"
+          class="dept-btn text-orange-600 pb-2 font-large border-b-2 border-transparent hover:border-orange-400 transition">
+          DIET
+        </button>
+        <button
+          onclick="showDepartment('dceee', event)"
+          class="dept-btn text-orange-600 pb-2 font-large border-b-2 border-transparent hover:border-orange-400 transition">
+          DCEEE
+        </button>
+        <button
+          onclick="showDepartment('dcea', event)"
+          class="dept-btn text-orange-600 pb-2 font-large border-b-2 border-transparent hover:border-orange-400 transition">
+          DCEA
+        </button>
+      </div>
+
+      <!-- Manage Tab Content -->
+      <div id="manageContent">
+        <!-- Announcements -->
+        <div id="announcements" class="tab-content text-center">
+          <div class="dept-content" data-dept="dit">
+            <h2 class="text-xl font-semibold text-orange-600 mb-2">
+              DIT Announcements
+            </h2>
+            <p>
+              Welcome to the Department of Information Technology. Stay tuned
+              for updates!
+            </p>
+          </div>
+          <div class="dept-content hidden" data-dept="dafe">
+            <h2 class="text-xl font-semibold text-orange-600 mb-2">
+              DAFE Announcements
+            </h2>
+            <p>
+              Welcome to the Department of Agriculture and Food Engineering.
+              Stay tuned for updates!
+            </p>
+          </div>
+          <div class="dept-content hidden" data-dept="diet">
+            <h2 class="text-xl font-semibold text-orange-600 mb-2">
+              DIET Announcements
+            </h2>
+            <p>
+              Welcome to the Department of Industrial Engineering and
+              Technology. Stay tuned for updates!
+            </p>
+          </div>
+          <div class="dept-content hidden" data-dept="dceee">
+            <h2 class="text-xl font-semibold text-orange-600 mb-2">
+              DCEEE Announcements
+            </h2>
+            <p>
+              Welcome to the Department of Computer, Electronics, and
+              Electrical Engineering. Stay tuned for updates!
+            </p>
+          </div>
+          <div class="dept-content hidden" data-dept="dcea">
+            <h2 class="text-xl font-semibold text-orange-600 mb-2">
+              DCEA Announcements
+            </h2>
+            <p>
+              Welcome to the Department of Civil Engineering and Architecture.
+              Stay tuned for updates!
+            </p>
+          </div>
+        </div>
+
+        <!-- Graphs -->
+        <div id="graphs" class="tab-content hidden text-center">
+          <div class="dept-content" data-dept="dit">
+            <h2 class="text-xl font-semibold text-orange-600 mb-2">
+              DIT Graphs
+            </h2>
+            <p>Graph: Enrollment trend of DIT students from 2020 to 2024.</p>
+          </div>
+          <div class="dept-content hidden" data-dept="dafe">
+            <h2 class="text-xl font-semibold text-orange-600 mb-2">
+              DAFE Graphs
+            </h2>
+            <p>Graph: Enrollment trend of DAFE students from 2020 to 2024.</p>
+          </div>
+          <div class="dept-content hidden" data-dept="diet">
+            <h2 class="text-xl font-semibold text-orange-600 mb-2">
+              DIET Graphs
+            </h2>
+            <p>Graph: Enrollment trend of DIET students from 2020 to 2024.</p>
+          </div>
+          <div class="dept-content hidden" data-dept="dceee">
+            <h2 class="text-xl font-semibold text-orange-600 mb-2">
+              DCEEE Graphs
+            </h2>
+            <p>Graph: Enrollment trend of DIET students from 2020 to 2024.</p>
+          </div>
+          <div class="dept-content hidden" data-dept="dcea">
+            <h2 class="text-xl font-semibold text-orange-600 mb-2">
+              DCEA Graphs
+            </h2>
+            <p>
+              Graph: Enrollment trend of DCEEE students from 2020 to 2024.
+            </p>
+          </div>
+        </div>
+
+        <!-- Memos -->
+        <div id="memos" class="tab-content hidden text-center">
+          <div class="dept-content" data-dept="dit">
+            <h2 class="text-xl font-semibold text-orange-600 mb-2">
+              DIT Memos
+            </h2>
+            <p>Memo 001: Submission deadline for system project proposals.</p>
+          </div>
+          <div class="dept-content hidden" data-dept="dafe">
+            <h2 class="text-xl font-semibold text-orange-600 mb-2">
+              DAFE Memos
+            </h2>
+            <p>Memo 002: Submission deadline for system project proposals.</p>
+          </div>
+          <div class="dept-content hidden" data-dept="diet">
+            <h2 class="text-xl font-semibold text-orange-600 mb-2">
+              DIET Memos
+            </h2>
+            <p>Memo 003: Submission deadline for system project proposals.</p>
+          </div>
+          <div class="dept-content hidden" data-dept="dceee">
+            <h2 class="text-xl font-semibold text-orange-600 mb-2">
+              DCEEE Memos
+            </h2>
+            <p>Memo 004: Submission deadline for system project proposals.</p>
+          </div>
+          <div class="dept-content hidden" data-dept="dcea">
+            <h2 class="text-xl font-semibold text-orange-600 mb-2">
+              DCEA Memos
+            </h2>
+            <p>Memo 005: Submission deadline for system project proposals.</p>
+          </div>
+        </div>
+        <div id="about" class="tab-content text-center">
+          <div class="dept-content" data-dept="dit">
+            <h2 class="text-xl font-semibold text-orange-600 mb-2">
+              About DIT
+            </h2>
+          </div>
+          <div class="dept-content hidden" data-dept="dafe">
+            <h2 class="text-xl font-semibold text-orange-600 mb-2">
+              About DAFE
+            </h2>
+          </div>
+          <div class="dept-content hidden" data-dept="diet">
+            <h2 class="text-xl font-semibold text-orange-600 mb-2">
+              About DIET
+            </h2>
+          </div>
+          <div class="dept-content hidden" data-dept="dceee">
+            <h2 class="text-xl font-semibold text-orange-600 mb-2">
+              About DCEEE
+            </h2>
+          </div>
+          <div class="dept-content hidden" data-dept="dcea">
+            <h2 class="text-xl font-semibold text-orange-600 mb-2">
+              About DCEA
+            </h2>
+          </div>
+        </div>
+      </div>
+
+      <!-- Upload Tab Content -->
+      <div id="uploadContent" class="hidden">
+        <div id="upload-announcements" class="upload-content hidden px-4 py-6">
+          <p class="text-center text-gray-600 text-lg mb-4">Upload Announcement Section</p>
+          <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 justify-center">
+            <?php foreach ($pdfs as $index => $pdf): ?>
+              <div class="bg-white shadow-md rounded-lg p-4 w-72 h-full flex flex-col justify-between">
+                <div class="h-full w-full mb-3 bg-gray-100 border border-gray-300 rounded overflow-hidden">
+                  <div id="pdf-viewer-<?= $index ?>" class="w-full h-full flex items-center justify-center text-sm text-gray-500">
+                    Loading PDF...
+                  </div>
+                  <script>
+                    const pdfPath<?= $index ?> = "<?= $pdf['file_path'] ?>";
+                    // JS-based PDF rendering logic goes here (e.g., PDF.js or iframe embedding)
+                  </script>
+                </div>
+                <div class="card-body flex-grow">
+                  <div class="file-title font-semibold text-gray-800 text-lg mb-1">
+                    <?= htmlspecialchars($pdf['description']) ?>
+                  </div>
+                  <p class="card-text text-gray-600 text-sm overflow-hidden">
+                    Preview of: <?= basename($pdf['file_path']) ?>
+                  </p>
+                </div>
+                <div class="flex justify-end mt-4 space-x-2">
+                  <button class="p-2 w-20 bg-blue-500 text-white rounded hover:bg-blue-600" title="Edit">Edit</button>
+                  <button class="p-2 w-20 bg-red-500 text-white rounded hover:bg-red-600" title="Delete">Delete</button>
+                </div>
+              </div>
+            <?php endforeach; ?>
+          </div>
+        </div>
+      </div>
+      <div id="upload-graphs" class="upload-content hidden">
+        <?php include 'Graph.php'; ?>
+      </div>
+      <div id="upload-memos" class="upload-content hidden">
+        <p class="text-center text-gray-600">Upload Memo Section</p>
+      </div>
+      <div id="upload-about" class="upload-content hidden">
+        <h2 class="text-3xl font-bold text-orange-600 mb-6 text-center">
+          About the College of Engineering and Information Technology
+        </h2>
+
+        <!-- Mission Section -->
+        <div class="bg-gray-100 p-4 rounded shadow">
+          <h3 class="text-xl font-semibold text-orange-600 mb-2">Mission</h3>
+          <div id="mission-container">
+            <textarea
+              id="mission-textarea"
+              class="w-full border p-2 rounded"
+              rows="4"
+              disabled><?php echo htmlspecialchars(mission($conn)['content'] ?? ''); ?></textarea>
+            <button
+              onclick="enableMissionEdit()"
+              id="mission-edit-btn"
+              class="mt-2 px-4 py-1 bg-orange-600 text-white rounded hover:bg-orange-700">
+              Edit
+            </button>
+            <button
+              onclick="saveMission()"
+              id="mission-save-btn"
+              class="mt-2 px-4 py-1 bg-green-600 text-white rounded hover:bg-green-700 hidden">
+              Save
+            </button>
+            <div id="mission-message" class="mt-2 hidden"></div>
+          </div>
+        </div>
+        <!-- Vision Section -->
+        <div class="bg-gray-100 p-4 rounded shadow">
+          <h3 class="text-xl font-semibold text-orange-600 mb-2">Vision</h3>
+          <div id="vision-container">
+            <textarea
+              id="vision-textarea"
+              class="w-full border p-2 rounded"
+              rows="4"
+              disabled><?php echo htmlspecialchars(vision($conn)['content'] ?? ''); ?></textarea>
+            <button
+              onclick="enableVisionEdit()"
+              id="vision-edit-btn"
+              class="mt-2 px-4 py-1 bg-orange-600 text-white rounded hover:bg-orange-700">
+              Edit
+            </button>
+            <button
+              onclick="saveVision()"
+              id="vision-save-btn"
+              class="mt-2 px-4 py-1 bg-green-600 text-white rounded hover:bg-green-700 hidden">
+              Save
+            </button>
+            <div id="vision-message" class="mt-2 hidden"></div>
+          </div>
+        </div>
+
+
+
+        <!-- Quality Policy -->
+        <div class="bg-gray-100 p-4 rounded shadow">
+          <h3 class="text-xl font-semibold text-orange-600 mb-2">
+            Quality Policy
+          </h3>
+          <textarea
+            class="w-full border p-2 rounded"
+            rows="4"
+            placeholder="Enter quality policy..."
+            disabled></textarea>
+          <button
+            onclick="enableEdit(this)"
+            class="mt-2 px-4 py-1 bg-orange-600 text-white rounded hover:bg-orange-700">
+            Edit
+          </button>
+          <button
+            onclick="saveText(this)"
+            class="mt-2 px-4 py-1 bg-orange-600 text-white rounded hover:bg-orange-700">
+            Save
+          </button>
+        </div>
+
+        <!-- College Goals -->
+        <div class="bg-gray-100 p-4 rounded shadow">
+          <h3 class="text-xl font-semibold text-orange-600 mb-2">
+            College Goals
+          </h3>
+          <textarea
+            class="w-full border p-2 rounded"
+            rows="4"
+            placeholder="Enter college goals..."
+            disabled></textarea>
+          <button
+            onclick="enableEdit(this)"
+            class="mt-2 px-4 py-1 bg-orange-600 text-white rounded hover:bg-orange-700">
+            Edit
+          </button>
+          <button
+            onclick="saveText(this)"
+            class="mt-2 px-4 py-1 bg-orange-600 text-white rounded hover:bg-orange-700">
+            Save
+          </button>
+        </div>
+
+        <!-- About the College -->
+        <div class="bg-gray-100 p-4 rounded shadow">
+          <h3 class="text-xl font-semibold text-orange-600 mb-2">
+            About the College
+          </h3>
+          <textarea
+            class="w-full border p-2 rounded"
+            rows="4"
+            placeholder="Enter about CEIT..."
+            disabled></textarea>
+          <button
+            onclick="enableEdit(this)"
+            class="mt-2 px-4 py-1 bg-orange-600 text-white rounded hover:bg-orange-700">
+            Edit
+          </button>
+          <button
+            onclick="saveText(this)"
+            class="mt-2 px-4 py-1 bg-orange-600 text-white rounded hover:bg-orange-700">
+            Save
+          </button>
+        </div>
+
+        <!-- Program Offerings -->
+        <div class="bg-gray-100 p-4 rounded shadow">
+          <h3 class="text-xl font-semibold text-orange-600 mb-2">
+            Program Offerings
+          </h3>
+          <textarea
+            class="w-full border p-2 rounded"
+            rows="4"
+            placeholder="Enter programs..."
+            disabled></textarea>
+          <button
+            onclick="enableEdit(this)"
+            class="mt-2 px-4 py-1 bg-orange-600 text-white rounded hover:bg-orange-700">
+            Edit
+          </button>
+          <button
+            onclick="saveText(this)"
+            class="mt-2 px-4 py-1 bg-orange-600 text-white rounded hover:bg-orange-700">
+            Save
+          </button>
+        </div>
+      </div>
+  </div>
+  </div>
+  </main>
+  </div>
+
+  <!-- Modal -->
+  <div
+    id="modal"
+    class="hidden fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm flex items-center justify-center z-50">
+    <div class="bg-white p-6 rounded shadow-lg w-full max-w-md relative">
+      <h3 id="modalTitle" class="text-2xl font-bold mb-4 text-orange-600">
+        Upload to CEIT Bulletin
+      </h3>
+      <form enctype="multipart/form-data">
+        <label class="block mb-2 text-gray-700">Title</label>
+        <input
+          type="text"
+          class="w-full border px-3 py-2 rounded mb-4"
+          placeholder="Enter title..."
+          required />
+
+        <label class="block mb-2 text-gray-700">Description</label>
+        <textarea
+          class="w-full border px-3 py-2 rounded mb-4"
+          placeholder="Enter description..."
+          required></textarea>
+
+        <label class="block mb-2 text-gray-700">Upload File (PDF or Image)</label>
+        <input
+          type="file"
+          accept=".pdf,image/*"
+          class="w-full mb-4"
+          required />
+
+        <div class="flex justify-end space-x-2">
+          <button
+            type="button"
+            onclick="closeModal()"
+            class="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400">
+            Cancel
+          </button>
+          <button
+            type="submit"
+            class="px-4 py-2 bg-orange-600 text-white rounded hover:bg-orange-700">
+            Submit
+          </button>
+        </div>
+      </form>
+      <button
+        onclick="closeModal()"
+        class="absolute top-2 right-2 text-gray-500 hover:text-black text-2xl leading-none">
+        &times;
+      </button>
+    </div>
+  </div>
+
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.min.js"></script>
+  <script>
+    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.worker.min.js';
+
+    <?php foreach ($pdfs as $index => $pdf): ?>
+      pdfjsLib.getDocument("<?= $pdf['file_path'] ?>").promise.then(function(pdf) {
+        return pdf.getPage(1);
+      }).then(function(page) {
+        const container = document.getElementById("pdf-viewer-<?= $index ?>");
+        container.innerHTML = "";
+
+        // Set a fixed scale that works for your layout
+        const scale = 1.0;
+        const viewport = page.getViewport({
+          scale: scale
+        });
+
+        const canvas = document.createElement("canvas");
+        const context = canvas.getContext("2d");
+
+        // Set canvas dimensions
+        canvas.height = viewport.height;
+        canvas.width = viewport.width;
+        canvas.classList.add("pdf-canvas");
+
+        container.appendChild(canvas);
+
+        // Render PDF page into canvas context
+        const renderContext = {
+          canvasContext: context,
+          viewport: viewport
+        };
+
+        page.render(renderContext);
+      }).catch(function(error) {
+        console.error('PDF rendering error:', error);
+        document.getElementById("pdf-viewer-<?= $index ?>").innerHTML =
+          '<div class="text-red-500 p-2">Could not load PDF preview. <a href="<?= $pdf['file_path'] ?>" class="text-blue-500 underline" target="_blank">Download instead</a></div>';
+      });
+    <?php endforeach; ?>
+  </script>
+  <script src="CEIT.js"></script>
+</body>
+
+</html>

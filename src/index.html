@@ -1,0 +1,113 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="./output.css" rel="stylesheet">
+  <title>CEIT Bulletin</title>
+</head>
+<body class="bg-orange-500 p-4 font-sans">
+  <div class="text-center text-3xl font-bold text-white bg-orange-700 p-4 rounded mb-4">
+    Cavite State University<br>
+    College of Engineering and Information Technology
+  </div>
+  <div class="bg-white text-center text-xl font-semibold text-black py-2 mb-6 rounded">
+    TRUTH • EXCELLENCE • SERVICE
+  </div>
+  <div class="grid grid-cols-1 md:grid-cols-6 gap-4">
+    <!-- Mission & Vision -->
+    <div class="md:col-span-2 bg-white rounded shadow bg-cover bg-center bg-no-repeat p-4" style="background-image: url('bg-small.png');">
+      <h2 class="text-xl font-bold mb-2">Mission & Vision</h2>
+      <div class="relative overflow-hidden rounded h-52">
+        <div id="mv-carousel" class="flex transition-transform duration-500 ease-in-out w-[200%] h-full">
+          <div class="w-full flex-shrink-0 p-2 h-full">
+            <img src="mission.jpg" alt="Mission" class="w-full h-full object-cover rounded">
+          </div>
+          <div class="w-full flex-shrink-0 p-2 h-full">
+            <img src="vision.jpg" alt="Vision" class="w-full h-full object-cover rounded">
+          </div>
+        </div>
+        <div class="absolute top-1/2 -translate-y-1/2 left-2">
+          <button onclick="moveMV(-1)" class="bg-orange-600 text-white px-2 py-1 rounded">&lt;</button>
+        </div>
+        <div class="absolute top-1/2 -translate-y-1/2 right-2">
+          <button onclick="moveMV(1)" class="bg-orange-600 text-white px-2 py-1 rounded">&gt;</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- University Calendar -->
+    <div class="md:col-span-2 row-span-2 rounded shadow bg-cover bg-center bg-no-repeat p-4 text-black" style="background-image: url('bg-large.png');">
+      <h2 class="text-xl font-bold text-center mb-4">University Calendar</h2>
+      <img src="calendar.jpg" alt="University Calendar" class="w-full h-[500px] object-cover rounded">
+    </div>
+
+    <!-- Announcements -->
+    <div class="md:col-span-2 row-span-2 rounded shadow bg-cover bg-center bg-no-repeat p-4 text-black" style="background-image: url('bg-large.png');">
+      <h2 class="text-xl font-bold text-center mb-4">ANNOUNCEMENTS</h2>
+      <div class="relative overflow-hidden h-[500px]">
+        <div id="announcement-carousel" class="flex transition-transform duration-500 ease-in-out w-[300%] h-full">
+          <div class="w-full flex-shrink-0 p-2 h-full">
+            <img src="announcement1.jpg" alt="Announcement 1" class="w-full h-full object-cover rounded">
+            <button class="mt-2 bg-blue-600 text-white px-4 py-1 rounded">View</button>
+          </div>
+          <div class="w-full flex-shrink-0 p-2 h-full">
+            <img src="announcement2.jpg" alt="Announcement 2" class="w-full h-full object-cover rounded">
+          </div>
+          <div class="w-full flex-shrink-0 p-2 h-full">
+            <img src="announcement3.jpg" alt="Announcement 3" class="w-full h-full object-cover rounded">
+          </div>
+        </div>
+        <div class="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-2">
+          <button onclick="moveAnnouncement(-1)" class="bg-orange-600 text-white px-2 py-1 rounded">&lt;</button>
+          <button onclick="moveAnnouncement(1)" class="bg-orange-600 text-white px-2 py-1 rounded">&gt;</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Graphs -->
+    <div class="md:col-span-2 bg-white rounded shadow bg-cover bg-center bg-no-repeat p-4" style="background-image: url('bg-medium.png');">
+      <h2 class="text-xl font-bold mb-2">Report Graphs</h2>
+      <div class="relative overflow-hidden rounded h-64">
+        <div id="bottom-carousel" class="flex transition-transform duration-500 ease-in-out w-[200%] h-full">
+          <div class="w-full flex-shrink-0 p-2 h-full">
+            <img src="accreditation.jpg" alt="Accreditation" class="w-full h-full object-cover rounded">
+          </div>
+          <div class="w-full flex-shrink-0 p-2 h-full">
+            <img src="exam-graph.jpg" alt="Exam Graph" class="w-full h-full object-cover rounded">
+          </div>
+        </div>
+        <div class="absolute top-1/2 -translate-y-1/2 left-2">
+          <button onclick="moveBottom(-1)" class="bg-orange-600 text-white px-2 py-1 rounded">&lt;</button>
+        </div>
+        <div class="absolute top-1/2 -translate-y-1/2 right-2">
+          <button onclick="moveBottom(1)" class="bg-orange-600 text-white px-2 py-1 rounded">&gt;</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    let mvIndex = 0;
+    function moveMV(dir) {
+      mvIndex = (mvIndex + dir + 2) % 2;
+      document.getElementById('mv-carousel').style.transform = `translateX(-${mvIndex * 100}%)`;
+    }
+
+    let annIndex = 0;
+    function moveAnnouncement(dir) {
+      const total = 3;
+      annIndex = (annIndex + dir + total) % total;
+      document.getElementById('announcement-carousel').style.transform = `translateX(-${annIndex * 100}%)`;
+    }
+
+    let bottomIndex = 0;
+    function moveBottom(dir) {
+      bottomIndex = (bottomIndex + dir + 2) % 2;
+      document.getElementById('bottom-carousel').style.transform = `translateX(-${bottomIndex * 100}%)`;
+    }
+  </script>
+
+</body>
+</html>

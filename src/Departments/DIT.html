@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>DIT MIS Bulletin Board</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 font-sans">
+  <div class="flex h-screen overflow-hidden">
+    <!-- Sidebar -->
+    <aside class="w-64 bg-orange-600 text-white p-4 flex flex-col justify-between flex-shrink-0">
+      <div>
+        <img src="../cvsulogo.png" alt="School Logo" class="w-24 h-24 mx-auto mb-6 rounded-full" />
+        <nav class="space-y-2">
+          <button onclick="showTab('announcements', 'Upload Announcement', event)" class="nav-btn w-full text-left p-2 hover:bg-orange-700 rounded transition duration-200 transform hover:scale-110">Announcements</button>
+          <button onclick="showTab('graphs', 'Upload Graph', event)" class="nav-btn w-full text-left p-2 hover:bg-orange-700 rounded transition duration-200 transform hover:scale-110">Graphs</button>
+          <button onclick="showTab('memos', 'Upload Memo', event)" class="nav-btn w-full text-left p-2 hover:bg-orange-700 rounded transition duration-200 transform hover:scale-110">Memo Updates</button>
+          <button onclick="showTab('about', 'Edit Info', event)" class="nav-btn w-full text-left p-2 hover:bg-orange-700 rounded transition duration-200 transform hover:scale-110">About DIT</button>
+        </nav>
+      </div>
+      <div class="mt-6 text-right text-xl">
+        <p>Welcome,<br>DIT MIS Officer!</p>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="flex-1 p-8 bg-white shadow-inner overflow-y-auto">
+      <div class="flex items-center justify-between">
+        <h1 class="text-3xl font-bold text-orange-600">DIT Bulletin</h1>
+        <button id="actionButton" onclick="openModal()" class="bg-orange-600 text-white px-4 py-2 rounded hover:bg-orange-700 transition duration-200 transform hover:scale-110">
+          Upload Announcement
+        </button>
+      </div>
+      <hr class="my-8 border-t-2 border-gray-300">
+
+      <!-- Sections -->
+      <div id="announcements" class="tab-content">
+        <h2 class="text-6xl font-semibold text-orange-600 mb-4 text-center">Announcements</h2>
+        <p class="text-gray-700 text-center">Stay updated with the latest MIS announcements here.</p>
+      </div>
+
+      <div id="graphs" class="tab-content hidden">
+        <h2 class="text-6xl font-semibold text-orange-600 mb-4 text-center">Graphs</h2>
+        <p class="text-gray-700 text-center">This section can include department statistics and analytics charts.</p>
+      </div>
+
+      <div id="memos" class="tab-content hidden">
+        <h2 class="text-6xl font-semibold text-orange-600 mb-4 text-center">Memo Updates</h2>
+        <p class="text-gray-700 text-center">Access and review internal memo updates here.</p>
+      </div>
+
+      <div id="about" class="tab-content hidden">
+        <h2 class="text-4xl font-bold text-orange-600 mb-6 text-center">About the Department of Information Technology</h2>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <!-- Mission -->
+          <div class="bg-gray-100 p-4 rounded shadow">
+            <h3 class="text-xl font-semibold text-orange-600 mb-2">Mission</h3>
+            <textarea class="w-full border p-2 rounded" rows="4" placeholder="Enter mission..." disabled required></textarea>
+            <button onclick="enableEdit(this)" class="mt-2 px-4 py-1 bg-orange-600 text-white rounded hover:bg-orange-700">Edit</button>
+            <button onclick="saveText(this)" class="mt-2 px-4 py-1 bg-orange-600 text-white rounded hover:bg-orange-700">Save</button>
+          </div>
+
+          <!-- Vision -->
+          <div class="bg-gray-100 p-4 rounded shadow">
+            <h3 class="text-xl font-semibold text-orange-600 mb-2">Vision</h3>
+            <textarea class="w-full border p-2 rounded" rows="4" placeholder="Enter vision..." disabled></textarea>
+            <button onclick="enableEdit(this)" class="mt-2 px-4 py-1 bg-orange-600 text-white rounded hover:bg-orange-700">Edit</button>
+            <button onclick="saveText(this)" class="mt-2 px-4 py-1 bg-orange-600 text-white rounded hover:bg-orange-700">Save</button>
+          </div>
+
+          <!-- Quality Policy -->
+          <div class="bg-gray-100 p-4 rounded shadow">
+            <h3 class="text-xl font-semibold text-orange-600 mb-2">Quality Policy</h3>
+            <textarea class="w-full border p-2 rounded" rows="4" placeholder="Enter quality policy..." disabled></textarea>
+            <button onclick="enableEdit(this)" class="mt-2 px-4 py-1 bg-orange-600 text-white rounded hover:bg-orange-700">Edit</button>
+            <button onclick="saveText(this)" class="mt-2 px-4 py-1 bg-orange-600 text-white rounded hover:bg-orange-700">Save</button>
+          </div>
+
+          <!-- College Goals -->
+          <div class="bg-gray-100 p-4 rounded shadow">
+            <h3 class="text-xl font-semibold text-orange-600 mb-2">College Goals</h3>
+            <textarea class="w-full border p-2 rounded" rows="4" placeholder="Enter college goals..." disabled></textarea>
+            <button onclick="enableEdit(this)" class="mt-2 px-4 py-1 bg-orange-600 text-white rounded hover:bg-orange-700">Edit</button>
+            <button onclick="saveText(this)" class="mt-2 px-4 py-1 bg-orange-600 text-white rounded hover:bg-orange-700">Save</button>
+          </div>
+
+          <!-- About the Department -->
+          <div class="bg-gray-100 p-4 rounded shadow">
+          <h3 class="text-xl font-semibold text-orange-600 mb-2">About the Department</h3>
+          <textarea class="w-full border p-2 rounded" rows="4" placeholder="About DIT..." disabled></textarea>
+          <button onclick="enableEdit(this)" class="mt-2 px-4 py-1 bg-orange-600 text-white rounded hover:bg-orange-700">Edit</button>
+          <button onclick="saveText(this)" class="mt-2 px-4 py-1 bg-orange-600 text-white rounded hover:bg-orange-700">Save</button>
+        </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Modal -->
+  <div id="modal" class="hidden fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm flex items-center justify-center z-50">
+    <div class="bg-white p-6 rounded shadow-lg w-full max-w-md relative">
+      <h3 id="modalTitle" class="text-2xl font-bold mb-4 text-orange-600">Modal Title</h3>
+      <form enctype="multipart/form-data">
+        <label class="block mb-2 text-gray-700">Title</label>
+        <input type="text" class="w-full border px-3 py-2 rounded mb-4" placeholder="Enter title..." required>
+
+        <label class="block mb-2 text-gray-700">Description</label>
+        <textarea class="w-full border px-3 py-2 rounded mb-4" placeholder="Enter description..." required></textarea>
+
+        <label class="block mb-2 text-gray-700">Upload File (PDF or Image)</label>
+        <input type="file" accept=".pdf,image/*" class="w-full mb-4" required>
+
+        <div class="flex justify-end space-x-2">
+          <button type="button" onclick="closeModal()" class="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400">Cancel</button>
+          <button type="submit" class="px-4 py-2 bg-orange-600 text-white rounded hover:bg-orange-700">Submit</button>
+        </div>
+      </form>
+      <button onclick="closeModal()" class="absolute top-2 right-2 text-gray-500 hover:text-black text-2xl leading-none">&times;</button>
+    </div>
+  </div>
+
+  <script>
+    let currentActionLabel = 'Upload Announcement';
+
+    function showTab(tabId, buttonLabel, event = null) {
+      // Show the correct section
+      const tabs = document.querySelectorAll('.tab-content');
+      tabs.forEach(tab => tab.classList.add('hidden'));
+      document.getElementById(tabId).classList.remove('hidden');
+
+      // Update the action button
+      const actionBtn = document.getElementById('actionButton');
+      if (tabId === 'about') {
+        actionBtn.classList.add('hidden');
+      } else {
+        actionBtn.classList.remove('hidden');
+        actionBtn.textContent = buttonLabel;
+        currentActionLabel = buttonLabel;
+      }
+
+      // Highlight the clicked tab
+      const buttons = document.querySelectorAll('.nav-btn');
+      buttons.forEach(btn => btn.classList.remove('bg-orange-700', 'font-bold'));
+      if (event) {
+        event.target.classList.add('bg-orange-700', 'font-bold');
+      } else {
+        document.querySelector('.nav-btn:nth-child(1)').classList.add('bg-orange-700', 'font-bold');
+      }
+    }
+
+    function openModal() {
+      document.getElementById('modal').classList.remove('hidden');
+      document.getElementById('modalTitle').textContent = currentActionLabel;
+    }
+
+    function closeModal() {
+      document.getElementById('modal').classList.add('hidden');
+    }
+
+    // Default tab on page load
+    document.addEventListener('DOMContentLoaded', () => {
+      showTab('announcements', 'Upload Announcement');
+    });
+  </script>
+
+</body>
+</html>
